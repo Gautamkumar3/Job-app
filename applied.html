@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Database</title>
+    <link rel="stylesheet" href="commonStyles.css" />
+  </head>
+
+  <body>
+    <div id="links">
+      <div><a href="index.html">Home</a></div>
+      <div><a href="applied.html">Applied Jobs</a></div>
+      <div><a href="bookmark.html">Bookmarks</a></div>
+    </div>
+<!-- html data for sortbunames -->
+    <select id="sortNames">
+        <option value="">Sort by Name</option>
+        <option value="asc">Ascending</option>
+        <option value="dsc">Decending</option>
+    </select>
+<!-- html data for sortbusalary -->
+    <select id="sortSalary">
+        <option value="">Sort by Salary</option>
+        <option value="high">High</option>
+        <option value="low">Low</option>
+    </select>
+<!-- html data for filter by job profile -->
+<select id="filterole">
+  <option value="">Filter by Category</option>
+  <option value="FSD">FSD</option>
+  <option value="Frontend">Frontend</option>
+  <option value="Backend">Backend</option>
+</select>
+    <main>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Job applied</th>
+            <th>Salary expected</th>
+            <th>Add to bookmark</th>
+          </tr>
+        </thead>
+        <tbody id="body">
+          <!-- Append your output to tbody -->
+        </tbody>
+      </table>
+    </main>
+  </body>
+  <script>
+    //you need to code here
+      var appData=JSON.parse(localStorage.getItem("jobList"))
+
+      // for sorting by name we use eventlistenr which event is change
+    document.querySelector("#filterole").addEventListener("change",filterRole);
+
+    // / then i call filterRole function and implement the logic on that
+
+    function filterRole(){
+      var selected=document.querySelector("#filterole").value;
+      // i use filter method because i want only selected data that user selected
+      var filterData=appData.filter(function(el){
+        return el.personRole==selected
+      })
+      displayData(filterData)
+    }
+   
+
+       // for sorting by name we use eventlistenr which event is change
+       document.querySelector("#sortSalary").addEventListener("change",sortBySalary);
+
+// then i call sortBySalary function and implement the logic on that
+       function sortBySalary(){
+        var selected=document.querySelector("#sortSalary").value;
+    
+        //  now compare and check what user choose in salary
+         if(selected=="high"){
+              appData.sort(function(a,b){
+           var x=a.personSalary;
+           var y=b.personSalary;
+             return y-x;
+              })
+             displayData(appData)
+         }
+         if(selected=="low"){
+              appData.sort(function(a,b){
+           var x=a.personSalary;
+           var y=b.personSalary;
+             return x-y;
+              })
+             displayData(appData)
+         }
+       }
+
+      // for sorting by name we use eventlistenr which event is change
+
+      document.querySelector("#sortNames").addEventListener("change", sortByName)
+ 
+      // / then i call sortByName function and implement the logic on that
+      function sortByName(){
+        //  first i take value from user when he choose in sort by names
+        var selected=document.querySelector("#sortNames").value;
+
+        if(selected=="asc"){
+          appData.sort(function(a,b){
+             var x=a.personName.toUpperCase()
+             var y=b.personName.toUpperCase()
+            if(x<y){
+              return -1;
+            }
+            if(x>y){
+              return 1;
+            }
+            return 0;
+          });
+          // here i call displayData function and give value as appData
+          displayData(appData)
+        }
+
+  // then we write a swap function for decending order
+        if(selected=="dsc"){
+          appData.sort(function(a,b){
+            var x=a.personName.toUpperCase()
+             var y=b.personName.toUpperCase()
+            if(x>y){
+              return  -1;
+            }
+            if(x<y){
+              return 1;
+            }
+            return 0;
+          })
+    // here i call displayData function and give value as appData
+
+          displayData(appData)
+        }
+      }
+
+      var sum=appData.reduce(function(acc,el){
+         return acc+Number(el.personSalary)
+      },0);
+      console.log(sum)
+
+      displayData(appData);
+
+      var bookMrakArr=JSON.parse(localStorage.getItem("bookmarks")) || [];
+
+      function displayData(data){
+        // here i empty tbody because i want to change it every time when i click on ascending or decending if i do not empty it will add again and again
+        document.querySelector("#body").innerHTML="";
+        //we write forEach function inside a function because whenever i need i can use this all data which is inside forEach function
+        data.forEach(function (el){
+            var tr=document.createElement("tr");
+            
+            var td1=document.createElement("td")
+            td1.innerText=el.personName
+
+            var td2=document.createElement("td")
+            td2.innerText=el.personEmail
+
+            var td3=document.createElement("td")
+            td3.innerText=el.personRole
+
+            var td4=document.createElement("td")
+            td4.innerText=el.personSalary
+
+            var td5=document.createElement("td")
+            td5.innerText="Bookmarks"
+            td5.style.color="blue"
+            td5.addEventListener("click", function(){
+                   bookMarkFunc(el)
+            })
+            
+
+            tr.append(td1,td2,td3,td4,td5);
+
+            document.querySelector("#body").append(tr)
+        })
+        
+      }
+
+     
+
+      function bookMarkFunc(el){
+        bookMrakArr.push(el)
+        localStorage.setItem("bookmarks",JSON.stringify(bookMrakArr))
+      }
+      
+       
+  </script>
+</html>
